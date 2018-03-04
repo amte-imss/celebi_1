@@ -50,6 +50,8 @@ class Profesores_model extends MY_Model
         {
             $this->db->select($select);
         }
+        $this->db->join('catalogo.unidades_instituto u','n.clave_unidad =  u.clave_unidad and u.anio = n.anio', 'inner');
+        $this->db->join('catalogo.delegaciones d','u.id_delegacion = d.id_delegacion', 'inner');
 
         $res = $this->db->get('nominas.nomina_historico n');
         $this->db->flush_cache();

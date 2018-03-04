@@ -118,7 +118,10 @@ function grid_titulares() {
           return item['matricula'];
         },
         editTemplate: function(value,item){
-        	matricula_value = value;
+        	if(value == null)
+        		matricula_value = '';
+        	else
+        		matricula_value = value;
 
         	var nombreField = this._grid.fields[2];
         	var delegacionField = this._grid.fields[3];
@@ -152,11 +155,12 @@ function grid_titulares() {
                 } else {
                     alert("No existe registrado en algún CIEFD el docente con matrícula " + matricula_value);
                     resultado = null;
-
+                    matricula_value = "";
+                    $('#matricula').val("");
                     nombre_value = "";
-	                  delegacion_value = "";
-	                  curp_value = "";
-	                  correo_value = "";
+					delegacion_value = "";
+					curp_value = "";
+					correo_value = "";
                 }
                 $(".nombre_css").empty().append(nombreField.editTemplate(nombre_value));
                 $(".delegacion_css").empty().append(delegacionField.editTemplate(delegacion_value));
@@ -238,7 +242,7 @@ function grid_adjuntos() {
 
 	console.log("grid");
 	$('#jsGridAdjuntos').jsGrid({
-		height: "120px",
+		height: "140px",
 		width: "95%",
 		filtering: false,
 		inserting: false,
@@ -294,7 +298,10 @@ function grid_adjuntos() {
           return item['matricula'];
         },
         editTemplate: function(value,item){
-        	matricula_value = value;
+        	if(value == null)
+        		matricula_value = '';
+        	else
+        		matricula_value = value;
 
         	var nombreField = this._grid.fields[2];
         	var delegacionField = this._grid.fields[3];
@@ -310,7 +317,7 @@ function grid_adjuntos() {
               var di = $.Deferred();
 
               $.ajax({
-                  url: site_url + '/docente/profesor_titular/' + matricula_value,
+                  url: site_url + '/docente/profesor_adjunto/' + matricula_value,
                   type: 'GET',
                   dataType: 'json',
               })
@@ -328,11 +335,12 @@ function grid_adjuntos() {
                 } else {
                     alert("No existe registrado en algún CIEFD el docente con matrícula " + matricula_value);
                     resultado = null;
-
+                    matricula_value = "";
+                    $('#matricula').val("");
                     nombre_value = "";
-	                  delegacion_value = "";
-	                  curp_value = "";
-	                  correo_value = "";
+					delegacion_value = "";
+					curp_value = "";
+					correo_value = "";
                 }
                 $(".nombre_css").empty().append(nombreField.editTemplate(nombre_value));
                 $(".delegacion_css").empty().append(delegacionField.editTemplate(delegacion_value));
@@ -353,11 +361,11 @@ function grid_adjuntos() {
         editValue: function(){
         	return matricula_value;
         },
-				validate: {
+		validate: {
             message: "El campo matrícula es obligatorio, por favor ingreselo.",
             validator: function (value) {
               return (matricula_value != null) && (matricula_value != '');
-            }
+        	}
         }
 			},
 			/*

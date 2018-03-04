@@ -75,22 +75,23 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
+  /*
     'dsn' => 'pgsql:host=localhost;port=5432;dbname=celebi',
 //    'dsn' => 'pgsql:host=192.168.10.19;port=5433;dbname=celebi',
 //    'hostname' => '192.168.10.19',
   'hostname' => 'localhost',
     'username' => 'postgres',
     'password' => 'postgresql',
-/*
+/*/
     'dsn' => 'pgsql:host=localhost;dbname=celebi',
     'hostname' => 'localhost',
     'username' => 'clapas_imss',
     'password' => 'logan',
-*/
+//*/
     'database' => 'celebi',
     'dbdriver' => 'pdo',
     'port' => '5432',
-//    'port' => '5432',
+//    'port' => '5433',
     'dbprefix' => '',
     'pconnect' => FALSE,
     'db_debug' => (ENVIRONMENT !== 'desarrollo'),
@@ -110,21 +111,22 @@ $db['default'] = array(
 
 
 $db['bitacoras'] = array(
+  /*
     'dsn' => 'pgsql:host=localhost;port=5432;dbname=celebi',
 //    'dsn' => 'pgsql:host=192.168.10.19;port=5433;dbname=celebi',
     'hostname' => 'localhost',
     'username' => 'postgres',
     'password' => 'postgresql',
-/*
+/*/
     'dsn' => 'pgsql:host=localhost;dbname=celebi',
     'hostname' => 'localhost',
     'username' => 'clapas_imss',
     'password' => 'logan',
-*/
+//*/
     'database' => 'celebi',
     'dbdriver' => 'pdo',
     'port' => '5432',
-//    'port' => '5432',
+//    'port' => '5433',
     'dbprefix' => '',
     'pconnect' => FALSE,
     'db_debug' => (ENVIRONMENT !== 'desarrollo'),

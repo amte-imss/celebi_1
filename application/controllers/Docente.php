@@ -29,7 +29,16 @@ class Docente extends Control_escolar
     $data['id_implementacion'] = $id_implementacion;
 
   	$implementacion = $this->implementaciones->get_implementacion(array('i.id_implementacion' => $id_implementacion));
-  	$data['regla'] = $this->catalogo->get_reglas_tipo_curso(array('id_regla_tipo_curso' => $implementacion[0]['id_regla_tipo_curso']))[0];
+    $data['regla'] = [];
+    
+    if(count($implementacion) > 0)
+    {
+      $regla = $this->catalogo->get_reglas_tipo_curso(array('id_regla_tipo_curso' => $implementacion[0]['id_regla_tipo_curso']));
+      if( count($regla) > 0)
+      {
+        $data['regla'] = $regla[0];
+      }
+    }
 
   	$main_content = $this->load->view('/implementaciones/profesores.php', $data, TRUE);
       $this->template->setMainContent($main_content);
@@ -109,7 +118,7 @@ class Docente extends Control_escolar
     {
       if (strlen($matricula) > 15)
       {
-          $resultado = array("success" => false, "message" => "La matrícula no debe de tener más de 15 caracteres", "data" => []);
+          $resultado = array("warning" => false, "message" => "La matrícula no debe de tener más de 15 caracteres", "data" => []);
       } else
       {
           $select = array('matricula','nombre_siap','apellido_paterno_siap','apellido_materno_siap','curp','d.nombre delegacion','clave_delegacion', 'correo_electronico');
@@ -117,14 +126,31 @@ class Docente extends Control_escolar
 
           if (count($profesor) < 1)
           {
+              $select = array('n.matricula','n.nombre nombre_siap','n.apellido_paterno apellido_paterno_siap','n.apellido_materno apellido_materno_siap','n.curp','d.clave_delegacional clave_delegacion');
               $profesor = $this->docente->get_profesor_nomina(array('matricula'=>$matricula),$select);
-              $resultado = array("success" => false, "message" => "No se ha encontrado la matrícula " . $matricula . ". Favor de verificar.");
-          } else
-          {
-              $profesor = $profesor[0];
-              $profesor['nombre_participante'] = $profesor['nombre_siap'].' '.$profesor['apellido_paterno_siap'].' '.$profesor['apellido_materno_siap'];
-              $resultado = array("success" => true, "message" => "Se encontro la información en nómina asociada a la matrícula " . $matricula, "data" => $profesor);
+              if(count($profesor) < 1)
+              {
+                $resultado = array("success" => false, "message" => "No se ha encontrado la matrícula " . $matricula . ". Favor de verificar.");
+                header('Content-Type: application/json; charset=utf-8;');
+                echo json_encode($resultado);
+                return;
+              } else
+              {
+                $datos_insertar = $profesor[0];
+                $datos_insertar['is_profesor'] = true;
+                pr($datos_insertar);
+                if(!$this->docente->insert_profesor($datos_insertar)){
+                  $resultado = array("success" => false, "message" => "Ocurrio un problema, intentelo de nuevo.");
+                  header('Content-Type: application/json; charset=utf-8;');
+                  echo json_encode($resultado);
+                  return;
+                }
+              }
+
           }
+          $profesor = $profesor[0];
+          $profesor['nombre_participante'] = $profesor['nombre_siap'].' '.$profesor['apellido_paterno_siap'].' '.$profesor['apellido_materno_siap'];
+          $resultado = array("success" => true, "message" => "Se encontro la información en nómina asociada a la matrícula " . $matricula, "data" => $profesor);
       }
 
       header('Content-Type: application/json; charset=utf-8;');

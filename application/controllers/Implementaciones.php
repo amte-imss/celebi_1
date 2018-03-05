@@ -85,8 +85,17 @@ class Implementaciones extends Cursos
                 ],
             ],
             Implementaciones::ET_PROGRAMACION => ['vista' => 'implementaciones/programacion.php',
-                'catalogos' => ['' => []
-                ],
+                'catalogos' => [
+                    'curso' => [
+                        'cargar_iniciar' => true,
+                        'nombre_tabla' => 'presenciales.curso',
+                        'key' => 'clave_curso',
+                        'value' => 'nombre',
+                        'enviar_objeto' => true,
+                        'select' => ["clave_curso", "nombre", "id_tipo_curso"],
+                        'where' => ['activo' => TRUE]
+                    ],
+                ]
             ],
             Implementaciones::ET_ALUMNOS => ['vista' => 'implementaciones/alumnos.php',
                 'catalogos' => ['' => []
@@ -396,10 +405,14 @@ class Implementaciones extends Cursos
         $datos_wizard["cve_implementacion"] = "";
         $datos_wizard['catalogos'] = [];
         $data = [];
+        $datos_wizard['step_process'] = 0;
         if (!is_null($cve_implementacion))
         {
             $data = $this->get_detalle_implementacion(array('i.id_implementacion' => $cve_implementacion));
-
+            if (!empty($data))
+            {
+                $datos_wizard['step_process'] = $data['step_process'];
+            }
             $data['categorias'] = $this->imp->get_categorias_implementacion(array('i.id_implementacion' => $cve_implementacion), ['ci.id_categoria']);
 //            pr($datos_wizard);
         }

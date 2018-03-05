@@ -805,7 +805,7 @@ if (!function_exists('generar_arbol'))
             $resul .= '<div class="col-sm-6">';
             $resul .= $CI->form_complete->create_element(
                             array('id' => 'acceptTerms-' . $value['id'], 'type' => 'checkbox',
-                                'value' =>  $value['id'],
+                                'value' => $value['id'],
                                 'attributes' => array(
                                     'name' => '',
                                     'class' => "conectados",
@@ -828,7 +828,7 @@ if (!function_exists('generar_arbol'))
                                 array('id' => 'acceptTerms-' . $value_sub['id'], 'type' => 'checkbox',
                                     'value' => '',
                                     'attributes' => array(
-                                        'name' => 'convocatoria_'.  $value_sub['id'],
+                                        'name' => 'convocatoria_' . $value_sub['id'],
                                         'class' => "conectados",
                                         "data-id" => $value_sub['id'],
                                         "data-idp" => $value['id']
@@ -846,7 +846,28 @@ if (!function_exists('generar_arbol'))
 
 }
 
+if (!function_exists('remove_accents'))
+{
 
+    /**
+     * @author CPMS
+     * @date 25/07/2017
+     * @param str Palabra a convertir
+     * @return Palabra sin acentos y en minusculas
+     */
+    function get_horas_24($str)
+    {
+        $horas = 24;
+        $array_result = [];
+        for ($i = 0; $i < $horas; $i++)
+        {
+            $h = ($i . toString() . lenght < 2) ? '0' . $i : $i;
+            $array_result[] = $h . ':00';
+        }
+        return $array_result;
+    }
+
+}
 
 
 /* End of file general_helper.php */

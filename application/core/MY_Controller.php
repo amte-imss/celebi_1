@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //require_once('/Accesos_modulos.php');
 include(APPPATH . 'core/Accesos_modulos.php');
 include(APPPATH . 'core/Gestion_files.php');
+
 /**
  * @author: LEAS
  * @version: 1.0
@@ -21,7 +22,7 @@ class MY_Controller extends CI_Controller implements Accesos_modulos, Gestion_fi
         $this->lang->load('interface', 'spanish');
         $this->load->config('general');
         $this->load->helper('form');
-        
+
         $usuario = $this->get_datos_sesion(En_datos_sesion::ID_USUARIO);
         if (!is_null($usuario))
         {
@@ -401,6 +402,52 @@ class MY_Controller extends CI_Controller implements Accesos_modulos, Gestion_fi
         $this->load->model('Modulo_model', 'modulo');
         $id_usuario = $this->get_datos_sesion(En_datos_sesion::ID_USUARIO);
         $this->accesos_disponibles = $this->modulo->get_niveles_acceso($id_usuario, 'usuario');
+    }
+
+
+    /**
+     * 
+     * @param type $matricula matricula del empleado
+     * @param type $delegacion delegación del empleado
+     * @param string $datos_basicos  puede obtener los siguientes datos
+     *  'matricula', 'nombre', 'paterno', 'materno', 'sexo', 
+      'curp', 'rfc', 'nacimiento', 'status', 'delegacion',
+      'antiguedad', 'adscripcion', 'descripcion',
+      'emp_regims', 'emp_keypue', 'pue_despue', 'fecha_ingreso'
+     * @return type
+     */
+    protected function get_busqueda_siap($matricula, $delegacion, $datos_basicos = ['nombre', 'paterno', 'materno'])
+    {
+        $respuesta = [En_tpmsg::SUCCESS => 0];
+        if (is_null($matricula) || empty($matricula) || is_null($delegacion) || empty($delegacion))
+        {
+            return $respuesta;
+        }
+        $this->load->library('Empleados_siap');
+        $datos_siap = $this->empleados_siap->buscar_usuario_siap($delegacion, $matricula);
+//        $datos_siap = $this->empleados_siap->buscar_usuario_siap('09', $matricula);
+
+        if ($datos_siap['tp_msg'] == En_tpmsg::SUCCESS)
+        {
+            $respuesta = [En_tpmsg::SUCCESS => 1];
+            if (!is_array($datos_basicos) and $datos_basicos == '*')
+            {
+                foreach ($datos_siap['empleado'] as $key => $value)
+                {
+                    $tmp = (array) $value;
+                    $respuesta['empleado'][$key] = $tmp[0];
+                }
+            } else
+            {
+                foreach ($datos_basicos as $keys_value)
+                {
+                    $tmp = (array) $datos_siap['empleado'][$keys_value];
+                    $respuesta['empleado'][$keys_value] = $tmp[0];
+                }
+            }
+        }
+
+        return $respuesta;
     }
 
 }

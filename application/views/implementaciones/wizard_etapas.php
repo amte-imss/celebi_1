@@ -8,6 +8,7 @@
         ?>
     </div>
     <ul class="list-inline pull-right">
+        <li><button type="button" class="btn btn-default cancelar_registro_curso">Cancelar</button></li>
         <li><button type="button" class="btn btn-primary next-step" data-etapa="1">Guardar y continuar</button></li>
     </ul>
 </div>
@@ -21,10 +22,10 @@
         ?>
     </div>
     <ul class="list-inline pull-right">
+        <li><button type="button" class="btn btn-default cancelar_registro_curso">Cancelar</button></li>
         <li><button type="button" class="btn btn-default prev-step">Anterior</button></li>
         <li><button type="button" class="btn btn-primary next-step" data-etapa="2">Guardar y continuar</button></li>
     </ul>
-
 </div>
 <div class="tab-pane" role="tabpanel" id="step3" >
     <div id="contenido3" >
@@ -36,6 +37,7 @@
         ?>
     </div>
     <ul class="list-inline pull-right">
+        <li><button type="button" class="btn btn-default cancelar_registro_curso">Cancelar</button></li>
         <li><button type="button" class="btn btn-default prev-step">Anterior</button></li>
         <!-- <li><button type="button" class="btn btn-default next-step">Saltar</button></li> -->
         <li><button type="button" class="btn btn-primary btn-info-full next-step" data-etapa="3">Guardar y continuar</button></li>
@@ -77,7 +79,45 @@ if (!empty($result))
     <?php
 }
 ?>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Initialize tooltips
+        step_process(<?php echo $step_process; ?>);
+        $('.nav-tabs > li a[title]').tooltip();
 
-<?php echo js("control_escolar/wizard/formulario_curso.js");
-?>
+        //Wizard
+        $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+
+            var $target = $(e.target);
+
+            if ($target.parent().hasClass('disabled')) {
+                return false;
+            }
+        });
+        $(".next-step").click(function (e) {
+            var prop = $(this).data("etapa");
+//        var etapa = prop.val();
+            var $active = $('.wizard .nav-tabs li.active');
+            update_insert(prop, ("form_" + prop), $active);
+
+        });
+        $(".prev-step").click(function (e) {
+
+            var $active = $('.wizard .nav-tabs li.active');
+            prevTab($active);
+
+        });
+        $(".cancelar_registro_curso").click(function (e) {
+            apprise('Confirme que realmente desea cancelar. Perdera los cambios', {'verify': true}, function (r)
+            {
+                if (r)
+                {
+                    // user clicked 'Yes'
+                    cancel();
+                }
+            });
+        });
+    });
     
+</script>
+

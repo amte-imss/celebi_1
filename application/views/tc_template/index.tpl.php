@@ -42,6 +42,7 @@
         <!--Celebi Css´s-->
         <?php echo css('template_cpredie/themes/all-themes.css'); ?>
         <?php echo css('template_cpredie/celebi.css'); ?>
+        <?php echo css('control_escolar/apprise.css'); ?>
 
         <!-- Jquery Core Js -->
         <?php echo js("plugins_cpredie/jquery/jquery.min.js"); ?>
@@ -263,5 +264,6 @@
         <?php echo js("control_escolar/js_export/Blob.js"); ?>
         <?php echo js("control_escolar/js_export/FileSaver.js"); ?>
         <?php echo js("control_escolar/js_export/xlsx.full.min.js"); ?>
+        <?php echo js('control_escolar/apprise.js'); ?>
     </body>
 </html>

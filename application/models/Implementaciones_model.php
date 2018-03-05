@@ -76,9 +76,10 @@ class Implementaciones_model extends MY_Model
             , "c.nombre nombre_curso", "c.id_tipo_curso",
             "i.id_regla_tipo_curso", "i.clave_unidad_sede",
             "case 
-            when (hi.cve_estado_implementacion = 'RE' and (select count(*) from presenciales.participantes_implementacion pim where pim.id_implementacion = i.id_implementacion) = 0) then 1
-            when (hi.cve_estado_implementacion = 'RE' and (select count(*) from presenciales.participantes_implementacion pim where pim.id_implementacion = i.id_implementacion) > 0) then 2
-            else 3 
+                when (hi.cve_estado_implementacion = 'RE' and (select count(*) from presenciales.participantes_implementacion pim where pim.id_implementacion = i.id_implementacion) = 0) then 1
+                when (hi.cve_estado_implementacion = 'RE' and (select count(*) from presenciales.participantes_implementacion pim where pim.id_implementacion = i.id_implementacion) > 0) then 2
+                when (hi.cve_estado_implementacion = 'RE') then 3
+                else 4 
             end as step_process"
         ];
         $this->db->select($select); //Únicamente el último estado

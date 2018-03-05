@@ -1,3 +1,4 @@
+<?php echo js("control_escolar/wizard/formulario_curso.js"); ?>
 <div class="content clearfix">
     <div class="wizard" id="content_detalle implementacion">
         <div class="wizard-inner">
@@ -11,16 +12,16 @@
                     </a>
                 </li>
                 <li role="presentation" class="disabled">
-                    <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Programación">
+                    <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Profesores">
                         <span class="round-tab">
-                            <i class="fas fa-calendar-alt fa-lg"></i>
+                            <i class="fas fa-users fa-lg"></i>
                         </span>
                     </a>
                 </li>
                 <li role="presentation" class="disabled">
-                    <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Profesores">
+                    <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Programación">
                         <span class="round-tab">
-                            <i class="fas fa-users fa-lg"></i>
+                            <i class="fas fa-calendar-alt fa-lg"></i>
                         </span>
                     </a>
                 </li>

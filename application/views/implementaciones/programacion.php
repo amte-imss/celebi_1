@@ -14,7 +14,19 @@ echo form_open('', array("id" => "form_" . $etapa));
                 </p>
                 <div class="form-group form-float">
                     <div class="form-line">
-                        <input type="text" class="datepicker form-control" placeholder="Por favor elija una fecha...">
+                        <?php
+                        echo $this->form_complete->create_element(
+                                array('id' => 'fecha_inicial', 'type' => 'text',
+                                    'value' => (isset($data['fecha_inicial'])) ? $data['fecha_inicial'] : '',
+                                    //                'value' => (isset($value['valor'])) ? $value['valor'] : '',
+                                    'attributes' => array(
+                                        'name' => 'clave_curso',
+                                        'class' => "form-control datepicker",
+                                        'placeholder' => "Por favor seleccione una fecha...",
+                                    ),
+                                )
+                        );
+                        ?>
                     </div>
                 </div>
             </div>
@@ -24,7 +36,19 @@ echo form_open('', array("id" => "form_" . $etapa));
                 </p>
                 <div class="form-group form-float">
                     <div class="form-line">
-                        <input type="text" class="datepicker form-control" placeholder="Por favor elija una fecha...">
+                        <?php
+                        echo $this->form_complete->create_element(
+                                array('id' => 'fecha_final', 'type' => 'time',
+                                    'value' => (isset($data['fecha_final'])) ? $data['fecha_final'] : '',
+                                    //                'value' => (isset($value['valor'])) ? $value['valor'] : '',
+                                    'attributes' => array(
+                                        'name' => 'fecha_final',
+                                        'class' => "form-control datepicker",
+                                        'placeholder' => "Por favor seleccione una fecha...",
+                                    ),
+                                )
+                        );
+                        ?>
                     </div>
                 </div>
             </div>

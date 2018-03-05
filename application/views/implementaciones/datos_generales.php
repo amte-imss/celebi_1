@@ -4,6 +4,7 @@ echo form_open('', array("id" => "form_" . $etapa));
 ?>
 <INPUT type="hidden" id="etapa" name="etapa" value="<?php echo (isset($etapa)) ? $etapa : 0; ?>" data-forminv="form_<?php echo $etapa; ?>">
 <INPUT type="hidden" class="implementacion_ctr" id="implementacion" name="implementacion" value="<?php echo (isset($data['id_implementacion'])) ? $data['id_implementacion'] : 0; ?>">
+<INPUT type="hidden" id="idregla_tipo_curso" name="idregla_tipo_curso" value="<?php echo (isset($data['id_regla_tipo_curso'])) ? $data['id_regla_tipo_curso'] : ''; ?>">
 <h3>Información general del curso</h3>
 <fieldset>
     <div class="form-group form-float">

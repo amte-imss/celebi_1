@@ -1,246 +1,103 @@
--- 07/09/2017
-ALTER TABLE catalogo.curso ADD clave_division varchar;
-UPDATE catalogo.curso SET  clave_division = 'DPE' WHERE id_tipo_curso < 15;
-ALTER TABLE catalogo.curso ALTER COLUMN clave_division SET NOT NULL ;
-ALTER TABLE catalogo.tipo_actividad DROP COLUMN clave_division ;
+alter table presenciales.implementacion add column fecha_inicial date null;
+alter table presenciales.implementacion add column fecha_final date null;
 
-CREATE SEQUENCE catalogo.id_modalidad_seq;
-CREATE TABLE catalogo.modalidad (
-	id_modalidad integer NOT NULL,
-	clave_modalidad character varying NOT NULL,
-	nombre_modalidad character varying NOT NULL,
-	descripcion text,
-	id_tipo_actividad integer NOT NULL,
-	PRIMARY KEY(id_modalidad),
-	FOREIGN KEY(id_tipo_actividad) REFERENCES catalogo.tipo_actividad(id_tipo_actividad)
-);
-
-ALTER TABLE catalogo.curso ADD FOREIGN KEY(clave_division) REFERENCES catalogo.division(clave_division);
-
-ALTER TABLE catalogo.modalidad ALTER id_modalidad SET DEFAULT nextval('catalogo.id_modalidad_seq');
-
-ALTER TABLE catalogo.area_enfoque DROP COLUMN id_tipo_actividad;
-ALTER TABLE catalogo.area_enfoque ADD id_modalidad integer;
-ALTER TABLE catalogo.area_enfoque ADD FOREIGN KEY(id_modalidad) REFERENCES catalogo.modalidad(id_modalidad);
-
---08/09/2017
-ALTER TABLE catalogo.curso ADD clave_principal varchar;
-
-
--- 11 septiembre 2017 activar oficinas centrales y mando
-update catalogo.delegaciones set activo = true;
-
--- 11 septiembre 2017 campo para registrar que unidad realizo un registro, los nulos fueron cargados en precarga
-alter table ods.registro_docente add column id_unidad_instituto int;
-
--- 11 septiembre 2017 carga de catalogos de tipos de unidades, unidades y departamentos
-insert into sistema.roles(nombre, orden) values ('N1', 3);
-
-
-insert into catalogo.tipos_unidades(
-id_tipo_unidad,
-nombre,
-descripcion,
-activa,
-nivel,
-grupo_tipo,
-grupo_nombre
-) select  id_tipo_unidad,
-nombre,
-descripcion,
-activa,
-nivel,
-grupo_tipo,
-grupo_nombre
-from
-dblink('dbname=tablero host=192.168.10.19 user=innovaedu password=nPgEoXCqd/?gV.,',
-'select * from catalogos.tipos_unidades') as tipos(
-id_tipo_unidad int,
-nombre varchar,
-descripcion text,
-activa boolean,
-nivel int,
-grupo_tipo varchar,
-grupo_nombre varchar
-);
-
-insert into catalogo.unidades_instituto (
-id_unidad_instituto,
-clave_unidad,
-nombre,
-id_delegacion,
-clave_presupuestal,
-fecha,
-nivel_atencion,
-id_tipo_unidad,
-umae,
-activa,
-latitud,
-longitud,
-id_region,
-grupo_tipo_unidad,
-grupo_delegacion,
-direccion_fisica,
-entidad_federativa,
-anio,
-unidad_principal,
-nombre_unidad_principal
-) (select
-id_,
-clave_unidad,
-nombre,
-id_delegacion,
-clave_presupuestal,
-fecha,
-nivel_atencion,
-id_tipo_unidad,
-umae,
-activa,
-latitud,
-longitud,
-id_region,
-grupo_tipo_unidad,
-grupo_delegacion,
-direccion_fisica,
-entidad_federativa,
-anio,
-unidad_principal,
-nombre_unidad_principal
-from
-dblink('dbname=tablero host=192.168.10.19 user=innovaedu password=nPgEoXCqd/?gV.,',
-'select * from catalogos.unidades_instituto order by id_unidad_instituto')
-as unidades(
-id_ int,
-clave_unidad varchar,
-nombre varchar,
-id_delegacion int,
-clave_presupuestal varchar,
-fecha timestamp,
-nivel_atencion int,
-id_tipo_unidad int,
-umae boolean,
-activa boolean,
-latitud float,
-longitud float,
-id_region int,
-grupo_tipo_unidad varchar,
-grupo_delegacion varchar,
-direccion_fisica text,
-entidad_federativa varchar,
-anio int,
-unidad_principal varchar,
-nombre_unidad_principal varchar
-));
-
-
-insert into catalogo.departamentos_instituto(
-id_departamento_instituto,
-nombre,
-clave_departamental,
-id_unidad_instituto,
-activa) select
-id_departamento_instituto,
-nombre,
-clave_departamental,
-id_unidad_instituto,
-activa
-from
-dblink('dbname=tablero host=192.168.10.19 user=innovaedu password=nPgEoXCqd/?gV.,',
-'select * from catalogos.departamentos_instituto') as departamentos(
-id_departamento_instituto int,
-nombre varchar,
-clave_departamental varchar,
-id_unidad_instituto int,
-activa boolean
-);
-
-insert into catalogo.subcategorias(
-id_subcategoria,
-nombre,
-fecha,
-activa,
-"order" ) select  id_subcategoria,
-nombre,
-fecha,
-activa,
-orden
-from
-dblink('dbname=tablero host=192.168.10.19 user=innovaedu password=nPgEoXCqd/?gV.,',
-'Select * from catalogos.subcategorias') as subc(
-id_subcategoria int,
-nombre varchar,
-fecha timestamp,
-activa boolean,
-orden numeric
-);
-
-
-insert into catalogo.grupos_categorias(
-id_grupo_categoria,
-nombre,
-descripcion,
-clave,
-id_subcategoria,
-activa,
-"order"
-) select id_grupo_categoria,
-nombre,
-descripcion,
-clave,
-id_subcategoria,
-activa,
-orden
-from
-dblink('dbname=tablero host=192.168.10.19 user=innovaedu password=nPgEoXCqd/?gV.,',
-'select * from catalogos.grupos_categorias') as gcat(
-id_grupo_categoria int,
-nombre varchar,
-descripcion text,
-clave varchar,
-id_subcategoria int,
-activa boolean,
-orden numeric
-);
-
-insert into catalogo.categorias(
-id_categoria,
-nombre,
-id_grupo_categoria,
-categoria_por_perfil,
-clave_categoria,
-fecha,
-subcategoria,
-activa,
-id_subcategoria
-) select id_categoria,
-nombre,
-id_grupo_categoria,
-categoria_por_perfil,
-clave_categoria,
-fecha,
-subcategoria,
-activa,
-id_subcategoria
-from
-dblink('dbname=tablero host=192.168.10.19 user=innovaedu password=nPgEoXCqd/?gV.,',
-'select * from catalogos.categorias') as categorias(
-id_categoria int,
-nombre varchar,
-id_grupo_categoria int,
-categoria_por_perfil varchar,
-clave_categoria varchar,
-fecha timestamp,
-subcategoria varchar,
-activa boolean ,
-id_subcategoria int,
-directivo_umae boolean
-);
-
--- 11/09/2017
-ALTER TABLE catalogo.tipo_curso ALTER COLUMN clave SET NOT NULL ;
-ALTER TABLE catalogo.tipo_curso ADD UNIQUE (clave);
-ALTER TABLE catalogo.curso ADD UNIQUE (clave_curso);
-ALTER TABLE catalogo.curso ALTER COLUMN id_tipo_curso SET NOT NULL ;
-
---28/09/2017
-update nominas.nomina_historico set delegacion = substring(clave_unidad,1,2);
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('A0000111','José','López','Ramires','CEAE770708HCLRGD09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('A0000222','María','Meneses','García','CEAE770708HCLRGD09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('A0000333','Francisco','Meneses','García','CEAE770708HCLRGD09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('8201161','VERONICA','AGUILAR','HERNANDEZ','AUHV540323MDFGRR06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('8839026','YOLANDA','GARCIA','HERNANDEZ','GAHY640816MDFRRL05');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('8844585','LIDIA','LOPEZ','ROMERO','LORL561225MGTPMD02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('711000279','ALEJANDRO','LUCERO','MARTINEZ','LUMA681023HGTCRL03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('711000757','YAHAIRA','LUNA','MENDOZA','LUMY000411MGTNNHA1');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('904694','MARIA','RAMIREZ','SOLIS','RASM450815MGRMLR04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2206552','LILIA','GALEANA','GUZMAN','GAGL520613MGRLZL04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('712000051','LIDIA','VAZQUEZ','FRANCO','VAFL420803MGRZRD05');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('712000082','EMMA','MUNDO','ORTEGA','MUOE410606MGRNRM09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('712000326','MATEO','NERI','PEREZ','NEPM120215HJCRRTA2');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1860356','SALMA','LOPEZ','REYES','LORS480531MHGPYL06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1950193','SILVIA','RAMIREZ','SOSA','RASS491228MHGMSL08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3440974','ATANACIO','GONZALEZ','HERNANDEZ','GOHA510814HPLNRT07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6115039','GUILLERMO','RAMIREZ','ATILANO','RAAG471014HDFMTL01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('7515847','MARTHA','MORENO','OMA&A','MOOM630425MHGRMR04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('713000019','DAMIE','HUEVE','GONZALEZ','HUGD250927MHGBNM07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('713000244','MARIA','VILLAMIL','BARDALES','VIBM300929MHGLRR08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('509973','PEDRO','HARO','HERRERA','HAHP450629HZSRRD01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('753653','JUAN','MEJIA','GUTIERREZ','MEGJ350828HJCJTN03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('952362','ROSA','MEZA','GARCIA','MEGR460206MCMZRS09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1253921','ROSA','GALVEZ','LOPEZ','GALR450830MMNLPS03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1475681','CIRILO','OROZCO','MAYORGA','OOMC460712HZSRYR08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1755129','ARMANDO','GARCIA','VARGAS','GAVA510827HDFRRR03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2210665','MARTHA','HERNANDEZ','DURAN','HEDM530425MJCRRR03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3259722','SILVIA','PEREZ','ROMERO','PERS540726MJCRML06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3676307','OFELIA','CABRERA','CHAVEZ','CXCO540403MMCBHF06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3824608','GENOVEVA','RODRIGUEZ','RANGEL','RORG550531MNTDNN01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3848221','ALEJANDRO','CORNEJO','RAMIREZ','CORA570923HJCRML02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4480708','MARGARITA','MEZA','MARTINEZ','MEMM530506MNTZRR03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6650937','MARIA HAYDE','PADILLA','DUARTE','PADH610702MSPDRY08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('7073305','MA REFUGIO','SANTOS','SALAZAR','SASR600704MJCNLF02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('7083963','MA GUADALUPE','LOY','DIAZ','LODG571026MMNYZD06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('8157162','WILFRIDO','CASTILLO','GOMEZ','CAGW561115HJCSML00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('714000670','ANDER','AVI?A','GODOY','AIGA060826HJCVDNA6');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('714001471','OFELIA','SOTELO','SANTILLAN','SOSO510406MCCTNF04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('736295','EMMA','GUARNEROS','ANICA','GUAE460419MTLRNM14');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1863932','CAROLINA','MENCHACA','HURTADO','MEHC520905MDFNRR06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2598752','MARGARITA','GRANADOS','GONZALEZ','GAGM520607MDFRNR08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3737616','SILVIA','JIMENEZ','SAMPERIO','JISS461204MDFMML01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3908682','MARTHA','CID','GOMEZ','CIGM490609MDFDMR08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('715000076','REBECA','QUINTERO','BARRIOS','QUBR490727MTLNRB06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4377648','ROSALBA','LARA','LOYA','LALR520303MMCRYS01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('715000085','EVA','DELGADILLO','GONZALEZ','DEGE550807MDFLNV06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5372054','RAMON','AVILES','SOLANO','AISR571128HDFVLM07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5831636','BERTHA','VALADEZ','GOMEZ','VAGB570912MDFLMR01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5931967','RAFAEL','GONZALEZ','SAUCEDO','GOSR580210HDFNCF02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5967457','ESTELA','GUERRERO','','GUXE581010MGTRXS04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6468888','MANUEL','RUIZ','FLORES','RUFM360521HOCZLN09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6624057','GELACIO','ZAMBRANO','FLORES','ZAFG401206HPLMLL07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('8295689','MARIA ANA','MARTINEZ','PEREZ','MAPA560525MMCRRN07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('715000486','FABIAN','FIERRO','MEJORADA','FIMF850818HDFRJB04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2591685','VIOLETA','ANGELES','PEREZ','AEPV560203MDFNRL02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2791927','MARIA NOEMI','HUIPE','ESTRADA','HUEN581214MMNPSM04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3374602','JESUS','CHAVEZ','VELAZQUEZ','CAVJ421008HHGHLS04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3497356','PAUL ALBERT','BREWER','VIEYRA','BEVP540507HDFRYL02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3644367','CELINA','RAMIREZ','RUBI','RARC511006MMCMBL00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3924939','RAQUEL','BLACIO','RUIZ','BARR410726MMCLZQ02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('7917317','MARIA DEL CARMEN','MEZA','LOPEZ','MELC670714MMNZPR06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('501646','GLORIA','GOMEZ','CAMPOS','GOCG370309MMNMML09');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('503908','URBANO','FLORES','RUIZ','FORU340619HGTLZR00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1405578','JUAN','LOPEZ','PANIAGUA','LOPJ400427HMNPNN04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1793012','CARLOS','LUCAS','TORRES','LUTC510403HMNCRR07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1999923','RAFAEL','RUIZ','GOMEZ','RUGR560816HDFZMF03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4411137','ANTONIO','CRUZ','MORENO','CUMA550913HOCRRN00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4437586','ARTURO','CHAVEZ','FERREYRA','CAFA530707HMNHRR06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6740367','GUADALUPE','BERUMEN','OROZCO','BEOG550305MMNRRD02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('717000013','ELVIRA','RIZO','ROJO','RIRE430517MMNZJL02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('325422','ZEFERINO','MU&OZ','BELLO','MUBZ371127HGRXLF07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1294512','RAUL','NARANJO','ORTIZ','NAOR351129HMSRRL06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1999591','EMMA','NAVA','CASTILLO','NACE520120MMSVSM01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4173694','MANUEL','AMADOR','DURAN','AADM551030HDFMRN07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4321715','MAXIMINO','CASTILLO','CARRASCO','CACM400608HPLSRX05');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6430384','JUAN CARLOS','ORDU&A','CARRILLO','OUCJ550616HMSRRN06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1567608','ARTURO','GOMEZ','SALAS','GOSA440103HNTMLR02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2778424','SERGIO','LUNA','CARREON','LUCS411018HNTNRR07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5075742','FELIPE','IBARRA','FELIX','IAFF530512HSLBLL02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('719000015','ELENA','VIRGEN','BARO','VIBE530817MNTRRL00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('719000006','MARIO','LUNA','LOPEZ','LULM620427HNTNPR02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('719000232','SHEYLA','PEÑA','TOSCANO','PETS000801MNTXSHA8');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('92975','SUSANA','HUERTA','SILVA','HUSS380730MDFRLS07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('464953','ARACELI','GARZA','SERNA','GASA400313MNLRRR03');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('1186213','ARTURO','LOPEZ','DUQUE','LODA480428HNLPQR08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2159309','HORTENCIA','GONZALEZ','GONZALEZ','GOGH551228MNLNNR01');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2546981','LUIS','AYALA','','AAXL411228HZSYXS06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('2847884','JORGE ALFONSO','VELA','GARZA','VEGJ520924HNLLRR00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3796914','BLANCA NELLY','MENDEZ','SAENZ','MESB600806MNLNNL08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3668576','GEMIMA','JARAMILLO','AGUILAR','JAAG580323MTSRGM04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('3836363','IRMA LAURA','RIOS','LOPEZ','RILI431019MNLSPR00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4074076','OLIVIA','VAZQUEZ','AMAYA','VAAO590121MNLZML08');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('4185919','MARIO','MENDOZA','GOMEZ','MEGM610604HNLNMR19');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5051258','SERGIO','CORREA','PLATA','COPS440122HDFRLR06');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('5990238','FRANCISCO','GUEVARA','MEZA','GUMF550604HNLVZR00');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('6211089','MARIA DE JESUS','SILVA','GARZA','SIGJ611204MNLLRS07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('720000018','DAVID','ZAMORA','LOPEZ','ZALD460821HDGMPV07');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('720000393','LUCIA','GAMEZ','PEREZ','GAPL580107MNLMRC02');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('720001152','DAVID','DIAZ','BLANCO','DIBD591229HNLZLV04');
+insert into presenciales.participantes (matricula, nombre, apellido_paterno, apellido_materno, curp)values ('29327','HILDA','SOTELO','CALDERON','SOCH450221MOCTLL04');

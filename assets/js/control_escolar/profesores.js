@@ -39,7 +39,7 @@ function get_delegaciones() {
 		async: false
 	})
 	.done(function(data) {
-		console.log("success");
+//		console.log("success");
 		delegaciones = data;
 	})
 	.fail(function() {
